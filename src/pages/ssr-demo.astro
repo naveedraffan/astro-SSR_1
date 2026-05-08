@@ -1,0 +1,112 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+// Demonstrate reading URL search params server-side
+const url = new URL(Astro.request.url);
+const name = url.searchParams.get('name') ?? 'World';
+const count = Number(url.searchParams.get('count') ?? 5);
+
+// Simulate a server-side data fetch (e.g. database query)
+async function fetchItems(n: number) {
+  // In a real app, replace this with your DB / API call
+  return Array.from({ length: Math.min(n, 20) }, (_, i) => ({
+    id: i + 1,
+    label: `Server item #${i + 1}`,
+    ts: new Date(Date.now() - i * 60_000).toISOString(),
+  }));
+}
+
+const items = await fetchItems(count);
+const renderedAt = new Date().toUTCString();
+---
+
+<Layout title="SSR Demo" description="Demonstrates SSR features: query params, server data fetch">
+  <h1>SSR Demo</h1>
+  <p class="sub">
+    Try changing the URL: <code>?name=Alice&amp;count=8</code>
+  </p>
+
+  <div class="greeting">
+    Hello, <strong>{name}</strong>! Here are {items.length} server-fetched items.
+    <span class="ts">Rendered at {renderedAt}</span>
+  </div>
+
+  <form class="controls" method="get">
+    <label>
+      Name
+      <input name="name" value={name} placeholder="Your name" />
+    </label>
+    <label>
+      Count
+      <input name="count" type="number" min="1" max="20" value={count} />
+    </label>
+    <button type="submit">Reload</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr><th>#</th><th>Label</th><th>Timestamp</th></tr>
+    </thead>
+    <tbody>
+      {items.map(item => (
+        <tr>
+          <td>{item.id}</td>
+          <td>{item.label}</td>
+          <td class="mono">{item.ts}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Layout>
+
+<style>
+  h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .sub code { background: var(--surface); padding: 0.1em 0.4em; border-radius: 4px; }
+
+  .greeting {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .ts { margin-left: auto; font-size: 0.75rem; color: var(--muted); }
+
+  .controls {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.8rem; color: var(--muted); }
+  input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    width: 160px;
+  }
+  button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 0.45rem 1.1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; }
+  .mono { font-family: monospace; font-size: 0.78rem; color: var(--muted); }
+</style>

@@ -1,0 +1,98 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+// ── Simple cookie-based auth guard ──────────────────────────────────────────
+// In a real app, validate a signed JWT or session token.
+// Here we just check for a cookie named `token` with value `demo-token`.
+//
+// To test:
+//   curl -H "Cookie: token=demo-token" http://localhost:4321/protected
+//   curl http://localhost:4321/protected          # → redirected to /login
+// ─────────────────────────────────────────────────────────────────────────────
+
+const token = Astro.cookies.get('token')?.value;
+const isAuthenticated = token === 'demo-token';
+
+if (!isAuthenticated) {
+  // Server-side redirect — no client JS required
+  return Astro.redirect('/login?from=/protected', 302);
+}
+
+const user = { name: 'Demo User', email: 'demo@example.com', role: 'admin' };
+---
+
+<Layout title="Protected Page">
+  <h1>🔒 Protected Page</h1>
+  <p class="sub">You are authenticated. This content is only rendered server-side for valid sessions.</p>
+
+  <div class="profile">
+    <div class="avatar">{user.name[0]}</div>
+    <div>
+      <div class="name">{user.name}</div>
+      <div class="email">{user.email}</div>
+      <span class="badge">{user.role}</span>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>How it works:</strong> The Astro frontmatter on this page reads the
+    <code>token</code> cookie via <code>Astro.cookies</code>. If it's missing or
+    invalid, the server issues a <code>302 Redirect</code> to <code>/login</code>
+    before any HTML is ever sent to the browser.
+  </div>
+</Layout>
+
+<style>
+  h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .sub { color: var(--muted); margin-bottom: 2rem; }
+
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .name { font-weight: 600; font-size: 1rem; }
+  .email { color: var(--muted); font-size: 0.85rem; margin-top: 0.2rem; }
+  .badge {
+    display: inline-block;
+    margin-top: 0.4rem;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 0.15em 0.6em;
+    border-radius: 99px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .note {
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .note code {
+    background: var(--bg);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    font-size: 0.85em;
+    color: var(--accent-light);
+  }
+</style>

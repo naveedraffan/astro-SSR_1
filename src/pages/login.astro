@@ -1,0 +1,83 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+// Handle POST: set demo cookie and redirect
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const password = form.get('password');
+
+  if (password === 'demo') {
+    Astro.cookies.set('token', 'demo-token', {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 60 * 60, // 1 hour
+    });
+    const from = new URL(Astro.request.url).searchParams.get('from') ?? '/protected';
+    return Astro.redirect(from, 302);
+  }
+}
+
+const from = new URL(Astro.request.url).searchParams.get('from') ?? '/protected';
+const error = Astro.request.method === 'POST' ? 'Incorrect password. Try "demo".' : null;
+---
+
+<Layout title="Login">
+  <div class="wrap">
+    <h1>Sign in</h1>
+    <p class="sub">Demo credentials: any username, password <code>demo</code></p>
+
+    {error && <div class="error">{error}</div>}
+
+    <form method="post" action={`/login?from=${encodeURIComponent(from)}`}>
+      <label>
+        Username
+        <input type="text" name="username" placeholder="any value" autocomplete="username" />
+      </label>
+      <label>
+        Password
+        <input type="password" name="password" placeholder="demo" autocomplete="current-password" />
+      </label>
+      <button type="submit">Sign in</button>
+    </form>
+  </div>
+</Layout>
+
+<style>
+  .wrap { max-width: 360px; margin: 3rem auto; }
+  h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .sub { color: var(--muted); font-size: 0.875rem; margin-bottom: 1.75rem; line-height: 1.6; }
+  .sub code { background: var(--surface); padding: 0.1em 0.35em; border-radius: 4px; }
+
+  .error {
+    background: #3b1010;
+    border: 1px solid #7f2020;
+    color: #f87171;
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  form { display: flex; flex-direction: column; gap: 1rem; }
+  label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.85rem; color: var(--muted); }
+  input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 0.65rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+  }
+</style>

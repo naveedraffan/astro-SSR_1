@@ -1,0 +1,99 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'An Astro SSR sample project' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} · Astro SSR</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --accent: #7c3aed;
+        --accent-light: #a78bfa;
+        --bg: #0f0f13;
+        --surface: #1a1a24;
+        --border: #2e2e40;
+        --text: #e2e2ef;
+        --muted: #888;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      header a.logo {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--accent-light);
+        text-decoration: none;
+        letter-spacing: -0.02em;
+      }
+
+      nav a {
+        color: var(--muted);
+        text-decoration: none;
+        margin-left: 1.5rem;
+        font-size: 0.9rem;
+        transition: color 0.15s;
+      }
+      nav a:hover { color: var(--text); }
+
+      main {
+        flex: 1;
+        padding: 2.5rem 2rem;
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 1rem 2rem;
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="logo" href="/">⚡ Astro SSR</a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/ssr-demo">SSR Demo</a>
+        <a href="/protected">Protected</a>
+        <a href="/api/hello">API</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer>
+      Built with <a href="https://astro.build" style="color: var(--accent-light)">Astro</a> · SSR via @astrojs/node
+    </footer>
+  </body>
+</html>

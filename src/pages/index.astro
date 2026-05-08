@@ -1,0 +1,83 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+// This page renders on the server on every request.
+// You have access to the full request object via Astro.request.
+const userAgent = Astro.request.headers.get('user-agent') ?? 'unknown';
+const renderedAt = new Date().toUTCString();
+---
+
+<Layout title="Home">
+  <section class="hero">
+    <h1>Astro <span class="accent">SSR</span> Sample</h1>
+    <p class="subtitle">
+      A minimal starter showing server-side rendering with the
+      <code>@astrojs/node</code> adapter and <strong>Yarn</strong>.
+    </p>
+  </section>
+
+  <div class="cards">
+    <div class="card">
+      <h2>⚡ Server-rendered</h2>
+      <p>This page is rendered on the server on every request — no static HTML is pre-built.</p>
+      <p class="meta">Rendered at: <code>{renderedAt}</code></p>
+    </div>
+
+    <div class="card">
+      <h2>🌐 Your User-Agent</h2>
+      <p>Read from the live HTTP request — impossible in a static site:</p>
+      <p class="meta"><code>{userAgent.slice(0, 80)}{userAgent.length > 80 ? '…' : ''}</code></p>
+    </div>
+
+    <div class="card">
+      <h2>🔌 API Routes</h2>
+      <p>
+        Full server-side API routes live in <code>src/pages/api/</code>.
+        Try <a href="/api/hello">/api/hello</a> or <a href="/api/time">/api/time</a>.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>🔒 Auth Guard</h2>
+      <p>
+        <a href="/protected">/protected</a> demonstrates a simple server-side
+        auth check using cookies/headers — redirects unauthenticated users.
+      </p>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .hero { margin-bottom: 2.5rem; }
+  h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; }
+  .accent { color: var(--accent-light); }
+  .subtitle { margin-top: 0.75rem; color: var(--muted); font-size: 1.05rem; max-width: 520px; line-height: 1.6; }
+  .subtitle code { background: var(--surface); padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.9em; }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .card h2 { font-size: 1rem; font-weight: 600; }
+  .card p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
+  .card a { color: var(--accent-light); }
+  .meta code {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    word-break: break-all;
+    background: var(--bg);
+    padding: 0.35em 0.5em;
+    border-radius: 4px;
+  }
+</style>
