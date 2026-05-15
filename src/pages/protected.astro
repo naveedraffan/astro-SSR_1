@@ -6,8 +6,8 @@ import Layout from '@/layouts/Layout.astro';
 // Here we just check for a cookie named `token` with value `demo-token`.
 //
 // To test:
-//   curl -H "Cookie: token=demo-token" http://localhost:4321/protected
-//   curl http://localhost:4321/protected          # → redirected to /login
+//   curl -H "Cookie: token=demo-token" https://otk-dev-nodejs-213-1215.cloudwaysstagingapps.com/protected
+//   curl https://otk-dev-nodejs-213-1215.cloudwaysstagingapps.com/protected  # → redirected to /login
 // ─────────────────────────────────────────────────────────────────────────────
 
 const token = Astro.cookies.get('token')?.value;
